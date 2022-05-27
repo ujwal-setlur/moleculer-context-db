@@ -19,7 +19,7 @@ describe('DatabaseContext', () => {
       local: true,
       state: true
     };
-    beforeAll(async done => {
+    beforeAll(async () => {
       connector = new MikroConnector();
       dbContextManager = new DatabaseContextManager(connector);
       await connector.init({
@@ -34,15 +34,13 @@ describe('DatabaseContext', () => {
       const generator = connector.getORM().getSchemaGenerator();
       await generator.dropSchema();
       await generator.createSchema();
-      return done();
     });
-    afterAll(async done => {
+    afterAll(async () => {
       const generator = connector.getORM().getSchemaGenerator();
       await generator.dropSchema();
       await connector.getORM().close();
-      return done();
     });
-    test(`contextWrapper() forks the entity manager`, async done => {
+    test(`contextWrapper() forks the entity manager`, async () => {
       const contextWrapper = dbContextManager.middleware().localAction(
         async function testContextForNewEntityManager(
           this: Service,
@@ -55,7 +53,6 @@ describe('DatabaseContext', () => {
         {} as ActionSchema
       );
       await contextWrapper(new MoleculerMikroContext(broker, endpoint));
-      done();
     });
     describe('wrapAction', () => {
       let localUuid: string = '';
@@ -67,13 +64,12 @@ describe('DatabaseContext', () => {
         testEntity.date = new Date();
         testEntity.name = testEntityName;
       });
-      afterEach(async done => {
+      afterEach(async () => {
         await connector
           .getORM()
           .em.nativeDelete(TestEntity, { uuid: localUuid });
-        return done();
       });
-      test(`all changes are made when there are no errors`, async done => {
+      test(`all changes are made when there are no errors`, async () => {
         const contextWrapper = dbContextManager.middleware().localAction(
           function testChangesArePersisted(
             this: Service,
@@ -98,9 +94,8 @@ describe('DatabaseContext', () => {
         } catch (e) {
           expect(e).toBeFalsy();
         }
-        done();
       });
-      test(`no changes are made when there are invalid changes`, async done => {
+      test(`no changes are made when there are invalid changes`, async () => {
         const contextWrapper = dbContextManager.middleware().localAction(
           function testChangesArePersisted(
             this: Service,
@@ -123,9 +118,8 @@ describe('DatabaseContext', () => {
           .em.fork()
           .findOne(TestEntity, { name: testEntityName });
         expect(fetchedTestEntity).toBeNull();
-        done();
       });
-      test(`no changes are made when the promise rejects`, async done => {
+      test(`no changes are made when the promise rejects`, async () => {
         const contextWrapper = dbContextManager.middleware().localAction(
           function testChangesArePersisted(
             this: Service,
@@ -144,7 +138,6 @@ describe('DatabaseContext', () => {
           .em.fork()
           .findOne(TestEntity, { name: testEntityName });
         expect(fetchedTestEntity).toBeNull();
-        done();
       });
     });
     describe('wrapEvent', () => {
@@ -157,13 +150,12 @@ describe('DatabaseContext', () => {
         testEntity.date = new Date();
         testEntity.name = testEntityName;
       });
-      afterEach(async done => {
+      afterEach(async () => {
         await connector
           .getORM()
           .em.nativeDelete(TestEntity, { uuid: localUuid });
-        return done();
       });
-      test(`all changes are made when there are no errors`, async done => {
+      test(`all changes are made when there are no errors`, async () => {
         const contextWrapper = dbContextManager.middleware().localEvent(
           function testChangesArePersisted(
             this: Service,
@@ -188,9 +180,8 @@ describe('DatabaseContext', () => {
         } catch (e) {
           expect(e).toBeFalsy();
         }
-        done();
       });
-      test(`no changes are made when there are invalid changes`, async done => {
+      test(`no changes are made when there are invalid changes`, async () => {
         const contextWrapper = dbContextManager.middleware().localEvent(
           function testChangesArePersisted(
             this: Service,
@@ -213,9 +204,8 @@ describe('DatabaseContext', () => {
           .em.fork()
           .findOne(TestEntity, { name: testEntityName });
         expect(fetchedTestEntity).toBeNull();
-        done();
       });
-      test(`no changes are made when the promise rejects`, async done => {
+      test(`no changes are made when the promise rejects`, async () => {
         const contextWrapper = dbContextManager.middleware().localEvent(
           function testChangesArePersisted(
             this: Service,
@@ -235,8 +225,6 @@ describe('DatabaseContext', () => {
           .em.fork()
           .findOne(TestEntity, { name: testEntityName });
         expect(fetchedTestEntity).toBeNull();
-
-        done();
       });
     });
   });

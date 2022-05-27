@@ -1,7 +1,7 @@
 import MikroConnector from '../../src/service.databases/mikro.connector';
 
 describe('MikroConnector', () => {
-  test('it throws an error on init with invalid dbType', async done => {
+  test('it throws an error on init with invalid dbType', async () => {
     const connector = new MikroConnector();
     await expect(
       connector.init({
@@ -11,6 +11,5 @@ describe('MikroConnector', () => {
         entities: []
       })
     ).rejects.toThrow();
-    done();
   });
 });

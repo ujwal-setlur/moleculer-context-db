@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 // Moleculer micro-services framework
 import moleculer from 'moleculer';
 import { Action, Event, Method, Service } from 'moleculer-decorators';
@@ -90,7 +91,7 @@ class Sample extends moleculer.Service {
   }
 
   @Method
-  eventTester(): void {} // eslint-disable-line class-methods-use-this
+  eventTester(): void {}
 }
 
 export default Sample;
