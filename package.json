@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bytetechnology/moleculer-context-db.git"
+    "url": "git+https://github.com/ujwal-setlur/moleculer-context-db.git"
   },
   "keywords": [
     "moleculer",
@@ -33,9 +33,9 @@
   "author": "Ujwal Setlur",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bytetechnology/moleculer-context-db/issues"
+    "url": "https://github.com/ujwal-setlur/moleculer-context-db/issues"
   },
-  "homepage": "https://github.com/bytetechnology/moleculer-context-db#readme",
+  "homepage": "https://github.com/ujwal-setlur/moleculer-context-db#readme",
   "peerDependencies": {
     "@mikro-orm/core": "^5.1.4",
     "moleculer": "^0.14.21"
