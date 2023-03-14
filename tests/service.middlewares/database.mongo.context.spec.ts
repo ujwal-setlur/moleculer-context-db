@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /**
  * Entry point for unit test.
  * Uses the moleculer microservices framework.
@@ -14,6 +15,9 @@ import MongoTestEntity from '../entities/mongo/test.entity';
 
 import SampleService from '../service/mongo/sample.service';
 
+const ChannelMiddleware = require('@moleculer/channels').Middleware;
+const TracingMiddleware = require('@moleculer/channels').Tracing;
+
 describe('Mongo unit tests', () => {
   let broker: ServiceBroker;
   let service: Service;
@@ -23,7 +27,16 @@ describe('Mongo unit tests', () => {
 
   beforeAll(async () => {
     // create a new moleculer service broker
-    broker = new ServiceBroker({ logLevel: 'fatal' });
+    broker = new ServiceBroker({
+      logLevel: 'fatal',
+      middlewares: [
+        ChannelMiddleware({
+          adapter: 'Fake',
+          context: true
+        }),
+        TracingMiddleware()
+      ]
+    });
 
     // create an in-memory mongodb instance
     mongod = await MongoMemoryServer.create();
@@ -139,12 +152,12 @@ describe('Mongo unit tests', () => {
     expect(spy).toBeCalledTimes(1);
   });
 
-  test('Generate invalid sample event', async () => {
-    // create a spy to look at events
+  test('Generate valid sample message', async () => {
+    // create a spy to look at messages
     const spy = jest.spyOn(service, 'eventTester');
 
-    await broker.emit('sample.testEntityEvent', {
-      name: 'Jane Doe'
+    await broker.sendToChannel('sample.testEntityMessage', {
+      name: 'John Doe'
     });
 
     expect(spy).toBeCalledTimes(1);

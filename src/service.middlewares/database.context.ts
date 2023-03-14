@@ -51,6 +51,25 @@ class DatabaseContextManager {
           // return handler result
           return handlerResult;
         };
+      },
+
+      localChannel(handler: any) {
+        return async function wrapEventWithMongoCommit(ctx: Context) {
+          const { em } = dbConnector.getORM();
+
+          // inject a forked EntityManager into the moleculer context
+          const moleculerMikroCtx = ctx as MoleculerMikroContext;
+          moleculerMikroCtx.entityManager = em.fork();
+
+          // call the handler
+          const handlerResult = await handler(moleculerMikroCtx);
+
+          // flush the entity manager
+          await moleculerMikroCtx.entityManager.flush();
+
+          // return handler result
+          return handlerResult;
+        };
       }
     };
   }

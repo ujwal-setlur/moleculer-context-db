@@ -227,5 +227,92 @@ describe('DatabaseContext', () => {
         expect(fetchedTestEntity).toBeNull();
       });
     });
+    describe('wrapChannel', () => {
+      let localUuid: string = '';
+      const testEntityName = 'testing';
+      const testEntity: TestEntity = new TestEntity();
+      beforeAll(() => {
+        localUuid = uuid.v4();
+        testEntity.uuid = localUuid;
+        testEntity.date = new Date();
+        testEntity.name = testEntityName;
+      });
+      afterEach(async () => {
+        await connector
+          .getORM()
+          .em.nativeDelete(TestEntity, { uuid: localUuid });
+      });
+      test(`all changes are made when there are no errors`, async () => {
+        const contextWrapper = dbContextManager.middleware().localChannel(
+          function testChangesArePersisted(
+            this: Service,
+            ctx: MoleculerMikroContext
+          ) {
+            ctx.entityManager.persist(testEntity);
+            return Promise.resolve();
+          } as any,
+          {} as ActionSchema
+        );
+        try {
+          await contextWrapper(new MoleculerMikroContext(broker, endpoint));
+          const localTestEntity: TestEntity | null = await connector
+            .getORM()
+            .em.fork()
+            .findOne(TestEntity, { name: testEntityName });
+          if (localTestEntity !== null) {
+            expect(localTestEntity.uuid).toEqual(localUuid);
+          } else {
+            expect(1).toEqual(0);
+          }
+        } catch (e) {
+          expect(e).toBeFalsy();
+        }
+      });
+      test(`no changes are made when there are invalid changes`, async () => {
+        const contextWrapper = dbContextManager.middleware().localChannel(
+          function testChangesArePersisted(
+            this: Service,
+            ctx: MoleculerMikroContext
+          ) {
+            ctx.entityManager.persist(testEntity);
+            const invalidTestEntity: TestEntity = new TestEntity();
+            ctx.entityManager.persist(invalidTestEntity);
+            return Promise.resolve();
+          } as any,
+          {} as ActionSchema
+        );
+        try {
+          await contextWrapper(new MoleculerMikroContext(broker, endpoint));
+        } catch (e) {
+          expect(e).toBeTruthy();
+        }
+        const fetchedTestEntity: TestEntity | null = await connector
+          .getORM()
+          .em.fork()
+          .findOne(TestEntity, { name: testEntityName });
+        expect(fetchedTestEntity).toBeNull();
+      });
+      test(`no changes are made when the promise rejects`, async () => {
+        const contextWrapper = dbContextManager.middleware().localChannel(
+          function testChangesArePersisted(
+            this: Service,
+            ctx: MoleculerMikroContext
+          ) {
+            ctx.entityManager.persist(testEntity);
+            return Promise.reject(new Error('Test Exception'));
+          } as any,
+          {} as ActionSchema
+        );
+        const mikroContext = new MoleculerMikroContext(broker, endpoint);
+
+        await expect(contextWrapper(mikroContext)).rejects.toThrow();
+
+        const fetchedTestEntity: TestEntity | null = await connector
+          .getORM()
+          .em.fork()
+          .findOne(TestEntity, { name: testEntityName });
+        expect(fetchedTestEntity).toBeNull();
+      });
+    });
   });
 });

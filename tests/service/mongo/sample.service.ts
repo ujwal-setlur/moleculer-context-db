@@ -1,7 +1,8 @@
 /* eslint-disable class-methods-use-this */
 // Moleculer micro-services framework
 import moleculer from 'moleculer';
-import { Action, Event, Method, Service } from 'moleculer-decorators';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Action, Channel, Event, Method, Service } from 'typed-moleculer';
 
 import { MoleculerMikroContext } from '../../../src';
 import TestEntity from '../../entities/mongo/test.entity';
@@ -79,6 +80,23 @@ class Sample extends moleculer.Service {
   async 'sample.testEntityEvent'(ctx: MoleculerMikroContext<{ name: string }>) {
     this.logger.info(
       `Got event from sender ${ctx.nodeID}; id: ${ctx.params.name}`
+    );
+    const em = ctx.entityManager;
+    const entity = await em.findOne<TestEntity>(TestEntity, {
+      name: ctx.params.name
+    });
+    if (entity) {
+      this.eventTester();
+    }
+    throw Error(`Could not find entity by name ${ctx.params.name}`);
+  }
+
+  @Channel({ context: true })
+  async 'sample.testEntityMessage'(
+    ctx: MoleculerMikroContext<{ name: string }>
+  ) {
+    this.logger.info(
+      `Got message from sender ${ctx.nodeID}; id: ${ctx.params.name}`
     );
     const em = ctx.entityManager;
     const entity = await em.findOne<TestEntity>(TestEntity, {
