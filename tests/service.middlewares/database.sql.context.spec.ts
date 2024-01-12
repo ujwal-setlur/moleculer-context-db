@@ -1,4 +1,4 @@
-import { Service, ActionSchema, ServiceBroker } from 'moleculer';
+import { Service, ServiceBroker } from 'moleculer';
 import * as uuid from 'uuid';
 
 import DatabaseContextManager from '../../src/service.middlewares/database.context';
@@ -25,10 +25,7 @@ describe('DatabaseContext', () => {
       await connector.init({
         type: 'sqlite',
         dbName: ':memory:',
-        entities: [TestEntity],
-        cache: {
-          enabled: false
-        }
+        entities: [TestEntity]
       });
       spy = jest.spyOn(connector.getORM().em, 'fork');
       const generator = connector.getORM().getSchemaGenerator();
@@ -50,7 +47,7 @@ describe('DatabaseContext', () => {
           expect(ctx.entityManager.isInTransaction()).toBeFalsy(); // we should not be in a transaction
           return Promise.resolve();
         } as any,
-        {} as ActionSchema
+        {} as any
       );
       await contextWrapper(new MoleculerMikroContext(broker, endpoint));
     });
@@ -78,7 +75,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(testEntity);
             return Promise.resolve();
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         try {
           await contextWrapper(new MoleculerMikroContext(broker, endpoint));
@@ -106,7 +103,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(invalidTestEntity);
             return Promise.resolve();
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         try {
           await contextWrapper(new MoleculerMikroContext(broker, endpoint));
@@ -128,7 +125,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(testEntity);
             return Promise.reject(new Error('Test Exception'));
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         const mikroContext = new MoleculerMikroContext(broker, endpoint);
         await expect(contextWrapper(mikroContext)).rejects.toThrow();
@@ -164,7 +161,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(testEntity);
             return Promise.resolve();
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         try {
           await contextWrapper(new MoleculerMikroContext(broker, endpoint));
@@ -192,7 +189,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(invalidTestEntity);
             return Promise.resolve();
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         try {
           await contextWrapper(new MoleculerMikroContext(broker, endpoint));
@@ -214,7 +211,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(testEntity);
             return Promise.reject(new Error('Test Exception'));
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         const mikroContext = new MoleculerMikroContext(broker, endpoint);
 
@@ -251,7 +248,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(testEntity);
             return Promise.resolve();
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         try {
           await contextWrapper(new MoleculerMikroContext(broker, endpoint));
@@ -279,7 +276,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(invalidTestEntity);
             return Promise.resolve();
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         try {
           await contextWrapper(new MoleculerMikroContext(broker, endpoint));
@@ -301,7 +298,7 @@ describe('DatabaseContext', () => {
             ctx.entityManager.persist(testEntity);
             return Promise.reject(new Error('Test Exception'));
           } as any,
-          {} as ActionSchema
+          {} as any
         );
         const mikroContext = new MoleculerMikroContext(broker, endpoint);
 

@@ -47,10 +47,7 @@ describe('Mongo unit tests', () => {
     await connector.init({
       type: 'mongo',
       clientUrl: uri,
-      entities: [MongoTestEntity],
-      cache: {
-        enabled: false
-      }
+      entities: [MongoTestEntity]
     });
     await connector.getORM().getSchemaGenerator().createSchema();
     const dbContext = new DatabaseContextManager(connector);

@@ -51,9 +51,6 @@ describe('Mongo unit tests', () => {
       type: 'mongo',
       clientUrl: uri,
       entities: [MongoTestEntity],
-      cache: {
-        enabled: false
-      },
       implicitTransactions: true
     });
     await connector.getORM().getSchemaGenerator().createSchema();
