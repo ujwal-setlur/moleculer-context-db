@@ -17,31 +17,29 @@ class MikroConnector<
   async init(options: MikroConnectorOptions<D>): Promise<MikroORM | Error> {
     const { type, ...rest } = options;
 
-    try {
-      /* istanbul ignore next */
-      switch (type) {
-        case 'mysql':
-          this.orm = await MySQLMikroORM.init<D>(rest);
-          break;
+    /* istanbul ignore next */
+    switch (type) {
+      case 'mysql':
+        this.orm = await MySQLMikroORM.init<D>(rest);
+        break;
 
-        case 'sqlite':
-          this.orm = await SQLiteMikroORM.init<D>(rest);
-          break;
+      case 'sqlite':
+        this.orm = await SQLiteMikroORM.init<D>(rest);
+        break;
 
-        case 'mongo':
-          this.orm = await MongoMikroORM.init<D>(rest);
-          break;
+      case 'mongo':
+        this.orm = await MongoMikroORM.init<D>(rest);
+        break;
 
-        case 'postgresql':
-        default:
-          this.orm = await PostgreSQLMikroORM.init<D>(rest);
-          break;
-      }
+      case 'postgresql':
+        this.orm = await PostgreSQLMikroORM.init<D>(rest);
+        break;
 
-      return this.orm;
-    } catch (err) {
-      return Promise.reject(err);
+      default:
+        throw new Error(`Unknown database type ${type}`);
     }
+
+    return this.orm;
   }
 
   getORM(): MikroORM<D> {
