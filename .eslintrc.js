@@ -21,9 +21,15 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'error',
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': 'error',
-    'import/extensions': ['error', 'ignorePackages', {
-      'ts': 'never'
-    }]
+    '@typescript-eslint/no-shadow': 'error',
+    'no-shadow': 'off',
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        ts: 'never'
+      }
+    ]
   },
   settings: {
     'import/resolver': {

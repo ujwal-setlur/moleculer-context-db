@@ -1,9 +1,6 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable import/no-extraneous-dependencies */
 import { IDatabaseDriver, Connection, MikroORM } from '@mikro-orm/core';
-import { MikroORM as MySQLMikroORM } from '@mikro-orm/mysql';
-import { MikroORM as PostgreSQLMikroORM } from '@mikro-orm/postgresql';
-import { MikroORM as SQLiteMikroORM } from '@mikro-orm/sqlite';
-import { MikroORM as MongoMikroORM } from '@mikro-orm/mongodb';
 
 import DatabaseConnector from './database.connector';
 
@@ -20,18 +17,24 @@ class MikroConnector<
     /* istanbul ignore next */
     switch (type) {
       case 'mysql':
+        const { MikroORM: MySQLMikroORM } = await import('@mikro-orm/mysql');
         this.orm = await MySQLMikroORM.init<D>(rest);
         break;
 
       case 'sqlite':
+        const { MikroORM: SQLiteMikroORM } = await import('@mikro-orm/sqlite');
         this.orm = await SQLiteMikroORM.init<D>(rest);
         break;
 
       case 'mongo':
+        const { MikroORM: MongoMikroORM } = await import('@mikro-orm/mongodb');
         this.orm = await MongoMikroORM.init<D>(rest);
         break;
 
       case 'postgresql':
+        const { MikroORM: PostgreSQLMikroORM } = await import(
+          '@mikro-orm/postgresql'
+        );
         this.orm = await PostgreSQLMikroORM.init<D>(rest);
         break;
 
